@@ -5,9 +5,23 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    collectionOperations: ['get'],
+    itemOperations: [
+        'get'=> [
+            'path' => '/products/{id}',
+            'requirements' => ['id' => '\d+'],
+            'normalization_context' => ['groups' => ['read:collection']]
+        ]
+    ],
+
+    normalizationContext: ['groups' => ['read:collection']]
+
+)]
 class Product
 {
     #[ORM\Id]
@@ -16,12 +30,18 @@ class Product
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection'])]
     private ?string $name;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection'])]
     private ?string $description;
 
     #[ORM\Column(type: 'integer')]
+    #[Assert\NotBlank]
+    #[Groups(['read:collection'])]
     private ?int $price;
 
     public function getId(): ?int
