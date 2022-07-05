@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,18 +29,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:collection'])]
     private ?string $lastname;
 
-    #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'user')]
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'user')]
     #[ApiSubresource]
     private $customers;
 
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
-    private ?string $email;
-
     #[ORM\Column(type: 'json')]
     private array $roles = [];
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private string $password;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ApiToken::class, orphanRemoval: true)]
     private $apiTokens;
@@ -54,28 +48,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->email;
     }
 
     /**
@@ -143,21 +115,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->customers->removeElement($customer)) {
             $customer->removeUser($this);
         }
-
-        return $this;
-    }
-
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }

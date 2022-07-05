@@ -7,6 +7,8 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
@@ -20,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
 
     normalizationContext: ['groups' => ['read:collection']])]
-class Customer
+class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -28,11 +30,15 @@ class Customer
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $brand;
+    private ?string $password;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'customers')]
-    #[Groups(['read:collection'])]
-    private $user;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $email;
+
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
+
+    private ArrayCollection $user;
 
     public function __construct()
     {
@@ -42,18 +48,6 @@ class Customer
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getBrand(): ?string
-    {
-        return $this->brand;
-    }
-
-    public function setBrand(string $brand): self
-    {
-        $this->brand = $brand;
-
-        return $this;
     }
 
     /**
@@ -78,5 +72,55 @@ class Customer
         $this->user->removeElement($user);
 
         return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function eraseCredentials()
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 }

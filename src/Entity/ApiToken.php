@@ -14,11 +14,11 @@ class ApiToken
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $token;
+    private ?string $token;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'apiTokens')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private ?User $user;
 
     public function getId(): ?int
     {
