@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource( collectionOperations: ['get'],
@@ -20,7 +19,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
             'normalization_context' => ['groups' => ['read:collection']]
         ]
     ],
-
     normalizationContext: ['groups' => ['read:collection']])]
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -61,6 +59,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     public function addUser(User $user): self
     {
         if (!$this->user->contains($user)) {
+            $user->setCustomer($this);
             $this->user[] = $user;
         }
 

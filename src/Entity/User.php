@@ -4,17 +4,23 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
-class User
+#[
+    ApiResource(
+        itemOperations: [
+        "get" => [ "security" => 'is_granted("ROLE_ADMIN") and object.getCustomer() == user'],
+
+        ],
+        attributes: ["security" => "is_granted('ROLE_ADMIN')"]
+)
+]
+class User implements UserOwnedInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,16 +28,13 @@ class User
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['read:collection'])]
     private ?string $firstname;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['read:collection'])]
     private ?string $lastname;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'user')]
-    #[ApiSubresource]
-    private $customers;
+    private $customer;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -41,7 +44,6 @@ class User
 
     public function __construct()
     {
-        $this->customers = new ArrayCollection();
         $this->apiTokens = new ArrayCollection();
     }
 
@@ -92,30 +94,15 @@ class User
         return $this;
     }
 
-    /**
-     * @return Collection<int, Customer>
-     */
-    public function getCustomers(): Collection
+
+    public function getCustomer()
     {
-        return $this->customers;
+        return $this->customer;
     }
 
-    public function addCustomer(Customer $customer): self
+    public function setCustomer(Customer $customer): self
     {
-        if (!$this->customers->contains($customer)) {
-            $this->customers[] = $customer;
-            $customer->addUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomer(Customer $customer): self
-    {
-        if ($this->customers->removeElement($customer)) {
-            $customer->removeUser($this);
-        }
-
+        $this->customer = $customer;
         return $this;
     }
 
