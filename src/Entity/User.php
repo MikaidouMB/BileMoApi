@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[
     ApiResource(
+        collectionOperations:['get','post'],
         itemOperations: [
         "get" => [ "security" => 'is_granted("ROLE_ADMIN") and object.getCustomer() == user'],
 
@@ -25,7 +26,7 @@ class User implements UserOwnedInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    public $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $firstname;
