@@ -9,13 +9,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource( collectionOperations: ['get'],
     itemOperations: [
         'get'=> [
-            'path' => '/products/{id}',
-            'requirements' => ['id' => '\d+'],
             'normalization_context' => ['groups' => ['read:collection']]
         ]
     ],
@@ -28,9 +28,11 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private ?string $password;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private ?string $email;
 
     #[ORM\Column(type: 'json')]

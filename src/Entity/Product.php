@@ -10,9 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ApiResource(
-    collectionOperations: ['get',
-                            'post' =>['security' => 'is_granted("ROLE_ADMIN")']
-],
+    collectionOperations: ['get'],
     itemOperations: [
         'get'=> [
             'path' => '/products/{id}',

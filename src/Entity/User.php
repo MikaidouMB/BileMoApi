@@ -6,19 +6,17 @@ use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[
-    ApiResource(
-        collectionOperations:['get','post'],
-        itemOperations: [
-        "get" => [ "security" => 'is_granted("ROLE_ADMIN") and object.getCustomer() == user'],
-
-        ],
-        attributes: ["security" => "is_granted('ROLE_ADMIN')"]
+#[ApiResource(
+    collectionOperations:['get','post'],
+    itemOperations: [
+        "get" => [ "security" => 'object.getCustomer() == user'],
+        "delete" => ['method' => 'delete']
+    ],
 )
 ]
 class User implements UserOwnedInterface
@@ -26,12 +24,18 @@ class User implements UserOwnedInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    public $id;
+    private $id;
 
+    /**
+     * first name of a user.
+     *
+     */
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private ?string $firstname;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     private ?string $lastname;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'user')]
