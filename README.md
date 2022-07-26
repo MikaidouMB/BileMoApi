@@ -88,10 +88,5 @@ Dependencies (require <a href="https://getcomposer.org/">Composer</a>):
 <p>In response you will obtain a token.</p>
 <p>You will then have to add that to following request headers under the key "Authorization" and value "Bearer %token%".</p>
 
-# Documentation
-
-<p>API documentation and testing interface is available <a href="">HERE</a></p>
-
-
 
 
