@@ -18,9 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             'normalization_context' => ['groups' => ['read:collection']]
         ],
     ],
-
     normalizationContext: ['groups' => ['read:collection']]
-
 )]
 class Product
 {
@@ -29,16 +27,25 @@ class Product
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    /**
+     * Name of product
+     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     #[Groups(['read:collection'])]
     private ?string $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    /**
+     * Description of product
+     */
+    #[ORM\Column(type: 'text', length: 255)]
     #[Assert\NotBlank]
     #[Groups(['read:collection'])]
     private ?string $description;
 
+    /**
+     * Price of product
+     */
     #[ORM\Column(type: 'integer')]
     #[Assert\NotBlank]
     #[Groups(['read:collection'])]

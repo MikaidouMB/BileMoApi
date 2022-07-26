@@ -27,11 +27,6 @@ security:
             stateless: true
             jwt: ~
 
-       # main:
-        #    lazy: true
-         #   provider: app_user_provider
-          #  custom_authenticator: App\Security\ApiTokenAuthenticator
-
         users:
             pattern: ^/api/users
             stateless: true

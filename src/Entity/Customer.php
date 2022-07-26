@@ -11,7 +11,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource( collectionOperations: ['get'],
     itemOperations: [
@@ -20,21 +19,29 @@ use Symfony\Component\Validator\Constraints as Assert;
         ]
     ],
     normalizationContext: ['groups' => ['read:collection']])]
+
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
-
+    /**
+     * Password of customer
+     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     private ?string $password;
-
+    /**
+     * Email of customer
+     */
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
     private ?string $email;
 
+    /**
+     * Role of customer
+     */
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
